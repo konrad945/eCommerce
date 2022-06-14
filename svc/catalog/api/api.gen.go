@@ -41,26 +41,38 @@ type CreateItemJSONRequestBody = CreateItemJSONBody
 
 // ServerInterface represents all server handlers.
 type ServerInterface interface {
+	// Swagger documentation
+	// (GET /api-docs)
+	GetApiDocs(ctx echo.Context) error
 	// Returns all items
-	// (GET /v1/items)
+	// (GET /api/v1/items)
 	GetItems(ctx echo.Context) error
 	// Create new item
-	// (POST /v1/items)
+	// (POST /api/v1/items)
 	CreateItem(ctx echo.Context) error
 	// Removes an item by ID
-	// (DELETE /v1/items/{id})
+	// (DELETE /api/v1/items/{id})
 	DeleteItemByID(ctx echo.Context, id int64) error
 	// Returns an item by ID
-	// (GET /v1/items/{id})
+	// (GET /api/v1/items/{id})
 	FindItemByID(ctx echo.Context, id int64) error
 	// Updates an item by ID
-	// (PUT /v1/items/{id})
+	// (PUT /api/v1/items/{id})
 	UpdateItemByID(ctx echo.Context, id int64) error
 }
 
 // ServerInterfaceWrapper converts echo contexts to parameters.
 type ServerInterfaceWrapper struct {
 	Handler ServerInterface
+}
+
+// GetApiDocs converts echo context to params.
+func (w *ServerInterfaceWrapper) GetApiDocs(ctx echo.Context) error {
+	var err error
+
+	// Invoke the callback with all the unmarshalled arguments
+	err = w.Handler.GetApiDocs(ctx)
+	return err
 }
 
 // GetItems converts echo context to params.
@@ -157,28 +169,29 @@ func RegisterHandlersWithBaseURL(router EchoRouter, si ServerInterface, baseURL 
 		Handler: si,
 	}
 
-	router.GET(baseURL+"/v1/items", wrapper.GetItems)
-	router.POST(baseURL+"/v1/items", wrapper.CreateItem)
-	router.DELETE(baseURL+"/v1/items/:id", wrapper.DeleteItemByID)
-	router.GET(baseURL+"/v1/items/:id", wrapper.FindItemByID)
-	router.PUT(baseURL+"/v1/items/:id", wrapper.UpdateItemByID)
+	router.GET(baseURL+"/api-docs", wrapper.GetApiDocs)
+	router.GET(baseURL+"/api/v1/items", wrapper.GetItems)
+	router.POST(baseURL+"/api/v1/items", wrapper.CreateItem)
+	router.DELETE(baseURL+"/api/v1/items/:id", wrapper.DeleteItemByID)
+	router.GET(baseURL+"/api/v1/items/:id", wrapper.FindItemByID)
+	router.PUT(baseURL+"/api/v1/items/:id", wrapper.UpdateItemByID)
 
 }
 
 // Base64 encoded, gzipped, json marshaled Swagger object
 var swaggerSpec = []string{
 
-	"H4sIAAAAAAAC/8SVT2/bPAzGv4rA9z0adboVO/jYBht86WFDT0UOqk07Gqw/peQURqDvPkiy09ZOtqwo",
-	"ukvdMBb58MeHyh4qLY1WqJyFYg+22qLk8d/SoQxPQ9ogOYExKurwt0ZbkTBOaAUF3Cnx2CMr10w3zG2R",
-	"iXA0g0aT5A4KEMp9uYIM3GAwfcQWCXwGiktcJrzlEme5xqPWkVAteJ8B4WMvCGso7oOqjc/gFp+Oq36n",
-	"MjHNxoewUI1eZvyBtBMVMkJrtLLioUPWaGKSK94K1bKKO97pNpazoZ5wXSh4k+KQwQ7JpmSXF6uLVYCk",
-	"DSpuBBTwOYYyMNxtY2P57jJPuYo9tOiWkr6j60lZxlUqyhrSMrY8armAWIF4OFDWUMA3dOWob2wkUfy0",
-	"WoVHpZVDFUtxYzpRxZP5TxvqTRaKXpmE/U/YQAH/5c9my0en5XFg/kCeE/EBIuLXfURFE1iMo7G9lJyG",
-	"l0123YjWZ2C0PcLjhpA7PPBgQp0Gkd4tkzWCEdC6a10Pf0Xhd81PhvWvneaoR7+Af/luZZ9rLhmfQpxY",
-	"MIVPaVfCtwf35XtR+8S6Q3dk1dYxbhPyuQPZA7dYM61isFwz24fWsF4MJKUJMq+Hch0XgbhEh2ShuJ8X",
-	"TRfSNGin2agubC8UcYlguoLCFTIfQfYC5x/vMr9ZDOxqySESTjLqhYel3r0w5sPAynXw8TlrfcZWfxWq",
-	"fjO5Bl21/TBwq3/q9DnawyBMf2QQd6Y+cZ+cb+uU483D6ePxj53OEZxJxtzWcz4jzfgS0m5qsacOCsjD",
-	"z5zf+F8BAAD//wfyuIWXCAAA",
+	"H4sIAAAAAAAC/8SUTU/cMBCG/4o17TElS4t6yK2wapULhyJOaA8mmWRdxR+MnUUr5P9e2U4WSMJHEaIX",
+	"SLzxzLzPvDN3UGlptELlLBR3YKstSh4fS4cy/DekDZITGE9FHf7WaCsSxgmtoIBLJW56ZOWa6Ya5LTIR",
+	"rmbQaJLcQQFCue8nkIHbG0yv2CKBz0BxifOA51ziJNZw1ToSqgXvMyC86QVhDcVVqGrjMzjH2+Wq3ylN",
+	"DLPx4VioRs8jXiDtRIWM0BqtrLjukDWamOSKt0K1rOKOd7qN6WzIJ1wXEp6lc8hgh2RTsOOj1dEqQNIG",
+	"FTcCCvgWjzIw3G2jsJwb8aXWVXxp0c1L+o2uJ2XZxS1vWyRW66qXqByPv8fgFJ/LGgr4he6HEesQMEiP",
+	"KhLCr6vVgt7FoIGP7aXktH/2m1B8vjvOE4yXBHCVqLGGtIw9G2AeLakoB8BLGiqtHKqYihvTiSrezP/Y",
+	"kG+cgWj2sbDPhA0U8Cm/n5Z8GJU8Os4frMOJ+B6iRx7riBWNzsAJpIPIrhu84TMw2i7wOCPkDg88mFBP",
+	"g0jflsnbwclo3amu9/9E4Tnx48T5x6PiqEc/g3/8bmnvc84ZP4U4sWAKb9OwzxyY34naJ94duoV9sY7n",
+	"NmGfupBdc4s10yoelmtm+yAP61lTUphQ6um+XMdpJi7RIVkorqZJ01Ydm+00G6oLKwiKuAlg3KNhD07b",
+	"kD1A+uJC9ptZ007mHCLlVEY987HUuwfmvN6zch28/JrRfsVk/xSqfjO5Bl21/TBwq//q9inaQyNMv9CI",
+	"S1M/sVNeb+sU483N6eP1j+3OAs5UxtTWUz4DzfgR0m6U2FMHBeTgN/5vAAAA//+9mF5QWQkAAA==",
 }
 
 // GetSwagger returns the content of the embedded swagger specification file

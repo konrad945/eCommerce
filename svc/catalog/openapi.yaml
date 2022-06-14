@@ -4,9 +4,16 @@ info:
   title: Catalog
   description: Service responsible for managing catalog items
 servers:
-  - url: /api
+  - url: /
 paths:
-  /v1/items:
+  /api-docs:
+    get:
+      summary: Swagger documentation
+      description: Returns Swagger documentation
+      responses:
+        200:
+          description: Swagger documentation
+  /api/v1/items:
     get:
       summary: Returns all items
       operationId: getItems
@@ -37,7 +44,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Item'
-  /v1/items/{id}:
+  /api/v1/items/{id}:
     get:
       summary: Returns an item by ID
       operationId: findItemByID
