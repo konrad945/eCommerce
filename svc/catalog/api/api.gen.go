@@ -18,19 +18,43 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
+// ErrorResponse defines model for ErrorResponse.
+type ErrorResponse struct {
+	// Error message
+	Message string `json:"message"`
+}
+
 // Item defines model for Item.
 type Item struct {
+	// Description of the item
+	Description string `json:"description"`
+
 	// Unique ID of the item
-	Id int64 `json:"id"`
+	Id uint `json:"id"`
 
 	// Name of the item
-	Name *string `json:"name,omitempty"`
+	Name string `json:"name"`
+
+	// Price of the item
+	Price float64 `json:"price"`
+
+	// Currency of the price
+	PriceCode string `json:"priceCode"`
 }
 
 // NewItem defines model for NewItem.
 type NewItem struct {
+	// Description of the item
+	Description string `json:"description"`
+
 	// Name of the item
 	Name string `json:"name"`
+
+	// Price of the item
+	Price float64 `json:"price"`
+
+	// Currency of the price
+	PriceCode string `json:"priceCode"`
 }
 
 // CreateItemJSONBody defines parameters for CreateItem.
@@ -52,13 +76,13 @@ type ServerInterface interface {
 	CreateItem(ctx echo.Context) error
 	// Removes an item by ID
 	// (DELETE /api/v1/items/{id})
-	DeleteItemByID(ctx echo.Context, id int64) error
+	DeleteItemByID(ctx echo.Context, id uint) error
 	// Returns an item by ID
 	// (GET /api/v1/items/{id})
-	FindItemByID(ctx echo.Context, id int64) error
+	FindItemByID(ctx echo.Context, id uint) error
 	// Updates an item by ID
 	// (PUT /api/v1/items/{id})
-	UpdateItemByID(ctx echo.Context, id int64) error
+	UpdateItemByID(ctx echo.Context, id uint) error
 }
 
 // ServerInterfaceWrapper converts echo contexts to parameters.
@@ -97,7 +121,7 @@ func (w *ServerInterfaceWrapper) CreateItem(ctx echo.Context) error {
 func (w *ServerInterfaceWrapper) DeleteItemByID(ctx echo.Context) error {
 	var err error
 	// ------------- Path parameter "id" -------------
-	var id int64
+	var id uint
 
 	err = runtime.BindStyledParameterWithLocation("simple", false, "id", runtime.ParamLocationPath, ctx.Param("id"), &id)
 	if err != nil {
@@ -113,7 +137,7 @@ func (w *ServerInterfaceWrapper) DeleteItemByID(ctx echo.Context) error {
 func (w *ServerInterfaceWrapper) FindItemByID(ctx echo.Context) error {
 	var err error
 	// ------------- Path parameter "id" -------------
-	var id int64
+	var id uint
 
 	err = runtime.BindStyledParameterWithLocation("simple", false, "id", runtime.ParamLocationPath, ctx.Param("id"), &id)
 	if err != nil {
@@ -129,7 +153,7 @@ func (w *ServerInterfaceWrapper) FindItemByID(ctx echo.Context) error {
 func (w *ServerInterfaceWrapper) UpdateItemByID(ctx echo.Context) error {
 	var err error
 	// ------------- Path parameter "id" -------------
-	var id int64
+	var id uint
 
 	err = runtime.BindStyledParameterWithLocation("simple", false, "id", runtime.ParamLocationPath, ctx.Param("id"), &id)
 	if err != nil {
@@ -181,17 +205,19 @@ func RegisterHandlersWithBaseURL(router EchoRouter, si ServerInterface, baseURL 
 // Base64 encoded, gzipped, json marshaled Swagger object
 var swaggerSpec = []string{
 
-	"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",
+	"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",
 }
 
 // GetSwagger returns the content of the embedded swagger specification file

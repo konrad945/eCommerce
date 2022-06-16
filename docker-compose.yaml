@@ -1,0 +1,13 @@
+services:
+  catalog-db:
+    image: postgres:latest
+    ports:
+      - 5432:5432
+    environment:
+      POSTGRES_DB: catalog
+      POSTGRES_USER: catalog_user
+      POSTGRES_PASSWORD: password
+    volumes:
+      - ./scripts/init_db/init_catalog.sql:/docker-entrypoint-initdb.d/init_catalog.sql
+    expose:
+      - 5432

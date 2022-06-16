@@ -7,7 +7,9 @@ import (
 	"github.com/kelseyhightower/envconfig"
 	"github.com/konrad945/eCommerce/svc/catalog/api"
 	"github.com/konrad945/eCommerce/svc/catalog/internal/handler"
+	"github.com/konrad945/eCommerce/svc/catalog/internal/store"
 	"github.com/labstack/echo/v4"
+	"github.com/sirupsen/logrus"
 )
 
 type config struct {
@@ -42,7 +44,14 @@ func (a *App) Run() error {
 	}
 	a.e.Use(middleware.OapiRequestValidator(swagger))
 
-	api.RegisterHandlers(a.e, handler.NewHandler())
+	cStore, err := store.NewCatalogStore()
+	if err != nil {
+		return fmt.Errorf("error while create store: %w", err)
+	}
+
+	logger := logrus.New()
+
+	api.RegisterHandlers(a.e, handler.NewHandler(logger, cStore))
 
 	return a.e.Start(fmt.Sprintf(":%d", conf.Port))
 }
