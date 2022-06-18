@@ -24,13 +24,28 @@ type ErrorResponse struct {
 	Message string `json:"message"`
 }
 
-// Item defines model for Item.
-type Item struct {
+// ItemResponse defines model for ItemResponse.
+type ItemResponse struct {
 	// Description of the item
-	Description string `json:"description"`
+	Description *string `json:"description,omitempty"`
 
 	// Unique ID of the item
-	Id uint `json:"id"`
+	Id *uint `json:"id,omitempty"`
+
+	// Name of the item
+	Name *string `json:"name,omitempty"`
+
+	// Price of the item
+	Price *float64 `json:"price,omitempty"`
+
+	// Currency of the price
+	PriceCode *string `json:"priceCode,omitempty"`
+}
+
+// NewItemRequest defines model for NewItemRequest.
+type NewItemRequest struct {
+	// Description of the item
+	Description string `json:"description"`
 
 	// Name of the item
 	Name string `json:"name"`
@@ -42,26 +57,41 @@ type Item struct {
 	PriceCode string `json:"priceCode"`
 }
 
-// NewItem defines model for NewItem.
-type NewItem struct {
+// UpdateItemRequest defines model for UpdateItemRequest.
+type UpdateItemRequest struct {
 	// Description of the item
-	Description string `json:"description"`
+	Description *string `json:"description,omitempty"`
 
 	// Name of the item
-	Name string `json:"name"`
+	Name *string `json:"name,omitempty"`
 
 	// Price of the item
-	Price float64 `json:"price"`
+	Price *float64 `json:"price,omitempty"`
 
 	// Currency of the price
-	PriceCode string `json:"priceCode"`
+	PriceCode *string `json:"priceCode,omitempty"`
+}
+
+// GetItemsParams defines parameters for GetItems.
+type GetItemsParams struct {
+	// Number of elements to be returned. Default 100
+	PageSize *int `form:"pageSize,omitempty" json:"pageSize,omitempty"`
+
+	// Page number.
+	Page *int `form:"page,omitempty" json:"page,omitempty"`
 }
 
 // CreateItemJSONBody defines parameters for CreateItem.
-type CreateItemJSONBody = NewItem
+type CreateItemJSONBody = NewItemRequest
+
+// UpdateItemByIDJSONBody defines parameters for UpdateItemByID.
+type UpdateItemByIDJSONBody = UpdateItemRequest
 
 // CreateItemJSONRequestBody defines body for CreateItem for application/json ContentType.
 type CreateItemJSONRequestBody = CreateItemJSONBody
+
+// UpdateItemByIDJSONRequestBody defines body for UpdateItemByID for application/json ContentType.
+type UpdateItemByIDJSONRequestBody = UpdateItemByIDJSONBody
 
 // ServerInterface represents all server handlers.
 type ServerInterface interface {
@@ -70,7 +100,7 @@ type ServerInterface interface {
 	GetApiDocs(ctx echo.Context) error
 	// Returns all items
 	// (GET /api/v1/items)
-	GetItems(ctx echo.Context) error
+	GetItems(ctx echo.Context, params GetItemsParams) error
 	// Create new item
 	// (POST /api/v1/items)
 	CreateItem(ctx echo.Context) error
@@ -103,8 +133,24 @@ func (w *ServerInterfaceWrapper) GetApiDocs(ctx echo.Context) error {
 func (w *ServerInterfaceWrapper) GetItems(ctx echo.Context) error {
 	var err error
 
+	// Parameter object where we will unmarshal all parameters from the context
+	var params GetItemsParams
+	// ------------- Optional query parameter "pageSize" -------------
+
+	err = runtime.BindQueryParameter("form", true, false, "pageSize", ctx.QueryParams(), &params.PageSize)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter pageSize: %s", err))
+	}
+
+	// ------------- Optional query parameter "page" -------------
+
+	err = runtime.BindQueryParameter("form", true, false, "page", ctx.QueryParams(), &params.Page)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter page: %s", err))
+	}
+
 	// Invoke the callback with all the unmarshalled arguments
-	err = w.Handler.GetItems(ctx)
+	err = w.Handler.GetItems(ctx, params)
 	return err
 }
 
@@ -205,19 +251,21 @@ func RegisterHandlersWithBaseURL(router EchoRouter, si ServerInterface, baseURL 
 // Base64 encoded, gzipped, json marshaled Swagger object
 var swaggerSpec = []string{
 
-	"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",
+	"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",
+	"4pk2Ia13zATqoYEahvvh7wAAAP//3kor2lMRAAA=",
 }
 
 // GetSwagger returns the content of the embedded swagger specification file

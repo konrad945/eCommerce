@@ -24,6 +24,21 @@ paths:
       summary: Returns all items
       operationId: getItems
       description: Returns an items from the catalog.
+      parameters:
+        - name: pageSize
+          in: query
+          description: Number of elements to be returned. Default 100
+          schema:
+            type: integer
+            default: 100
+            minimum: 1
+        - name: page
+          in: query
+          description: Page number.
+          schema:
+            type: integer
+            default: 0
+            minimum: 0
       responses:
         200:
           description: Items response
@@ -32,7 +47,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Item'
+                  $ref: '#/components/schemas/ItemResponse'
     post:
       summary: Create new item
       operationId: createItem
@@ -42,14 +57,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/NewItem'
+              $ref: '#/components/schemas/NewItemRequest'
       responses:
         201:
           description: Item response
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Item'
+                $ref: '#/components/schemas/ItemResponse'
         500:
           description: Error response
           content:
@@ -75,7 +90,13 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Item'
+                $ref: '#/components/schemas/ItemResponse'
+        500:
+          description: Error response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
     delete:
       summary: Removes an item by ID
       operationId: deleteItemByID
@@ -89,8 +110,14 @@ paths:
             type: integer
             format: uint
       responses:
-        204:
+        200:
           description: Item deleted
+        500:
+          description: Error response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
     put:
       summary: Updates an item by ID
       operationId: updateItemByID
@@ -103,12 +130,28 @@ paths:
           schema:
             type: integer
             format: uint
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateItemRequest'
       responses:
         200:
           description: Item updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ItemResponse'
+        500:
+          description: Error response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
 components:
   schemas:
-    NewItem:
+    NewItemRequest:
       required:
         - name
         - description
@@ -128,13 +171,22 @@ components:
         priceCode:
           type: string
           description: Currency of the price
-    Item:
-      required:
-        - id
-        - name
-        - description
-        - price
-        - priceCode
+    UpdateItemRequest:
+      properties:
+        name:
+          type: string
+          description: Name of the item
+        description:
+          type: string
+          description: Description of the item
+        price:
+          type: number
+          format: double
+          description: Price of the item
+        priceCode:
+          type: string
+          description: Currency of the price
+    ItemResponse:
       properties:
         id:
           type: integer
