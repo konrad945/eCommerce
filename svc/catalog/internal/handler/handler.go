@@ -55,6 +55,15 @@ func (h *handler) GetItems(ctx echo.Context, params api.GetItemsParams) error {
 	return ctx.JSON(http.StatusOK, items)
 }
 
+// FindItemByID returns item with ID from the underlying store
+func (h *handler) FindItemByID(ctx echo.Context, id uint) error {
+	item, err := h.store.GetItem(id)
+	if err != nil {
+		return h.writeErrorResponse(ctx, err)
+	}
+	return ctx.JSON(http.StatusOK, item)
+}
+
 // CreateItem handles creation of a new item in the underlying store
 func (h *handler) CreateItem(ctx echo.Context) error {
 	var newItem api.NewItemRequest
@@ -76,15 +85,6 @@ func (h *handler) DeleteItemByID(ctx echo.Context, id uint) error {
 		return h.writeErrorResponse(ctx, err)
 	}
 	return ctx.NoContent(http.StatusOK)
-}
-
-// FindItemByID returns item with ID from the underlying store
-func (h *handler) FindItemByID(ctx echo.Context, id uint) error {
-	item, err := h.store.GetItem(id)
-	if err != nil {
-		return h.writeErrorResponse(ctx, err)
-	}
-	return ctx.JSON(http.StatusOK, item)
 }
 
 // UpdateItemByID updates item with ID in the underlying store
