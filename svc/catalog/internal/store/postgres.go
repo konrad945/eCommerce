@@ -1,6 +1,7 @@
 package store
 
 import (
+	"errors"
 	"fmt"
 	"github.com/kelseyhightower/envconfig"
 	"gorm.io/driver/postgres"
@@ -14,6 +15,8 @@ type config struct {
 	Port     int    `envconfig:"DB_PORT" default:"5432"`
 	Host     string `envconfig:"DB_HOST" default:"localhost"`
 }
+
+var ErrInvalidPageParams = errors.New("page and pageSize parameters should be greater than or equal to 1")
 
 type CatalogStore struct {
 	db *gorm.DB
@@ -61,7 +64,10 @@ func (s *CatalogStore) GetItem(id uint) (Item, error) {
 }
 
 func (s *CatalogStore) GetItems(pageSize, page int) (items []Item, err error) {
-	err = s.db.Model(&Item{}).Offset(page - 1).Limit(pageSize).Find(&items).Error
+	if page < 1 || pageSize < 1 {
+		return nil, ErrInvalidPageParams
+	}
+	err = s.db.Model(&Item{}).Offset((page - 1) * pageSize).Limit(pageSize).Find(&items).Error
 	return
 }
 

@@ -37,8 +37,8 @@ paths:
           description: Page number.
           schema:
             type: integer
-            default: 0
-            minimum: 0
+            default: 1
+            minimum: 1
       responses:
         200:
           description: Items response

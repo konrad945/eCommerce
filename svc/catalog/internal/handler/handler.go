@@ -45,7 +45,7 @@ func (h *handler) GetApiDocs(ctx echo.Context) error {
 
 // GetItems returns items from underlying store
 func (h *handler) GetItems(ctx echo.Context, params api.GetItemsParams) error {
-	page := nvl(params.Page, 0)
+	page := nvl(params.Page, 1)
 	pageSize := nvl(params.PageSize, 100)
 
 	items, err := h.store.GetItems(pageSize, page)
