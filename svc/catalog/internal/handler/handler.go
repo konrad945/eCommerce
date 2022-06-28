@@ -7,8 +7,11 @@ import (
 	"github.com/konrad945/eCommerce/svc/catalog/internal/store"
 	"github.com/labstack/echo/v4"
 	"github.com/sirupsen/logrus"
+	"go.opentelemetry.io/otel"
+	"go.opentelemetry.io/otel/attribute"
 	"gorm.io/gorm"
 	"net/http"
+	"strconv"
 )
 
 var _ api.ServerInterface = (*handler)(nil)
@@ -44,24 +47,30 @@ func (h *handler) GetApiDocs(ctx echo.Context) error {
 }
 
 // GetItems returns items from underlying store
-func (h *handler) GetItems(ctx echo.Context, params api.GetItemsParams) error {
+func (h *handler) GetItems(eCtx echo.Context, params api.GetItemsParams) error {
+	_, span := otel.Tracer("").Start(eCtx.Request().Context(), "GetItems")
+	defer span.End()
+
 	page := nvl(params.Page, 1)
 	pageSize := nvl(params.PageSize, 100)
 
 	items, err := h.store.GetItems(pageSize, page)
 	if err != nil {
-		return h.writeErrorResponse(ctx, fmt.Errorf("error while getting items: %w", err))
+		return h.writeErrorResponse(eCtx, fmt.Errorf("error while getting items: %w", err))
 	}
-	return ctx.JSON(http.StatusOK, items)
+	return eCtx.JSON(http.StatusOK, items)
 }
 
 // FindItemByID returns item with ID from the underlying store
-func (h *handler) FindItemByID(ctx echo.Context, id uint) error {
+func (h *handler) FindItemByID(eCtx echo.Context, id uint) error {
+	_, span := otel.Tracer("").Start(eCtx.Request().Context(), "GetItem")
+	span.SetAttributes(attribute.Key("itemID").String(strconv.Itoa(int(id))))
+	defer span.End()
 	item, err := h.store.GetItem(id)
 	if err != nil {
-		return h.writeErrorResponse(ctx, err)
+		return h.writeErrorResponse(eCtx, err)
 	}
-	return ctx.JSON(http.StatusOK, item)
+	return eCtx.JSON(http.StatusOK, item)
 }
 
 // CreateItem handles creation of a new item in the underlying store
