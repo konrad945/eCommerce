@@ -20,6 +20,7 @@ sudo snap install helm --classic
 After successful helm installation let's add some public repositories
 ```shell
 helm repo add bitnami https://charts.bitnami.com/bitnami
+helm repo add jaegertracing https://jaegertracing.github.io/helm-charts
 ```
 
 ### Kind setup

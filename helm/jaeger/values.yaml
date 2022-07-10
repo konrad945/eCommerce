@@ -1,0 +1,5 @@
+storage:
+  type: cassandra
+cassandra:
+  config:
+    cluster_size: 1

@@ -11,3 +11,7 @@ k8s-namespace-create:
 k8s-postgresql-install:
 	helm repo update
 	helm install postgre-db -f helm/postgresql/values.yaml bitnami/postgresql -n backend
+
+k8s-jaeger-install:
+	helm repo update
+	helm install jaeger -f helm/jaeger/values.yaml jaegertracing/jaeger -n backend
