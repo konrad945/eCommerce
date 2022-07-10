@@ -4,7 +4,6 @@ services:
     ports:
       - 5432:5432
     environment:
-      POSTGRES_DB: catalog
       POSTGRES_USER: catalog_user
       POSTGRES_PASSWORD: password
     volumes:
