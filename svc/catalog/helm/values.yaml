@@ -5,7 +5,7 @@
 replicaCount: 1
 
 image:
-  repository: docker.io/library/catalog
+  repository: localhost:5001/catalog
   pullPolicy: IfNotPresent
   tag: "latest"
 

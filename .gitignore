@@ -16,3 +16,9 @@
 
 # Dependency directories (remove the comment below to include it)
 # vendor/
+
+# Terraform files
+*.tfstate
+*.tfstate.backup
+.terraform.*
+.terraform

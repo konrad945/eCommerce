@@ -4,23 +4,12 @@ eCommerce will be a cloud-native microservice application. Let's start!
 
 ## Prerequisites
 
-For the full-blown experience <b>kind, kubectl</b> and <b>helm</b> should be installed.
+For the full-blown experience <b>docker, kind</b> and <b> kubectl</b> should be installed.
 
 ### Kubectl setup
 For linux systems with snap package manager use command for kubectl installation:
 ```shell
 sudo snap install kubectl --classic
-```
-
-### Helm setup
-For linux systems with snap package manager use command for helm installation:
-```shell
-sudo snap install helm --classic
-```
-After successful helm installation let's add some public repositories
-```shell
-helm repo add bitnami https://charts.bitnami.com/bitnami
-helm repo add jaegertracing https://jaegertracing.github.io/helm-charts
 ```
 
 ### Kind setup
@@ -36,11 +25,15 @@ export PATH=$PATH:$GOBIN
 ```
 
 ## Quick Start
-To quickly bootstrap application execute ```make start-all ```. It will:
+To quickly bootstrap application execute ```make start-all ```
+
+It will:
   * Create kind cluster
-  * Create needed namespaces
+  * Create local docker registry
   * Install needed backend services (DB, Jaeger, (more will come)... )
   * Build, load and install apps (catalog, (more will come)... ) 
+
+To delete k8s cluster and docker registry execute ```make clean-all```
 
 As for now there are no external endpoints (ingress, api gateway) created thus for access to specific 
 services port forwarding is required. ```kubectl port-forward svc/<svc-name> <local-port>:<svc-port>```

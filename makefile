@@ -1,31 +1,25 @@
-kind-start:
-	kind create cluster
+cluster-deploy:
+	terraform -chdir=terraform/create-cluster init
+	terraform -chdir=terraform/create-cluster apply -auto-approve
 
-kind-stop:
-	kind delete cluster
+cluster-destroy:
+	terraform -chdir=terraform/create-cluster destroy -auto-approve
 
-k8s-namespace-create:
-	kubectl create namespace backend
-	kubectl create namespace apps
+apps-deploy:
+	terraform -chdir=terraform/setup-cluster init
+	terraform -chdir=terraform/setup-cluster apply -auto-approve
 
-k8s-postgresql-install:
-	helm repo update
-	helm install postgre-db -f helm/postgresql/values.yaml bitnami/postgresql -n backend
-
-k8s-jaeger-install:
-	helm repo update
-	helm install jaeger -f helm/jaeger/values.yaml jaegertracing/jaeger -n backend
-
-k8s-images-load:
-	kind load docker-image catalog:latest
+apps-destroy:
+	terraform -chdir=terraform/setup-cluster destroy -auto-approve
 
 service-catalog-build:
-	docker build . -t catalog:latest
+	docker build . -t localhost:5001/catalog:latest
 
-k8s-catalog-install:
-	helm install catalog svc/catalog/helm/ -n backend
+images-push:
+	docker push localhost:5001/catalog:latest
 
-start-all: kind-start k8s-namespace-create k8s-postgresql-install k8s-jaeger-install service-catalog-build k8s-images-load k8s-catalog-install
+start-all: service-catalog-build cluster-deploy images-push apps-deploy
+clean-all: apps-destroy cluster-destroy
 
 run-tests:
 	go test ./svc/...
