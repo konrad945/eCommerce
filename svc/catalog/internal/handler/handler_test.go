@@ -17,6 +17,17 @@ import (
 	"testing"
 )
 
+func TestGetHealtz(t *testing.T) {
+	req := httptest.NewRequest(http.MethodGet, "/healtz", nil)
+	rec := httptest.NewRecorder()
+	ctx := echo.New().NewContext(req, rec)
+
+	err := NewHandler(logrus.New(), &mockCatalogStore{}).GetHealtz(ctx)
+
+	assert.NoError(t, err)
+	assert.Equal(t, http.StatusOK, rec.Code)
+}
+
 func TestGetApiDocs(t *testing.T) {
 	req := httptest.NewRequest(http.MethodGet, "/api-docs", nil)
 	rec := httptest.NewRecorder()

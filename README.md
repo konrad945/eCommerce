@@ -1,4 +1,4 @@
-# eCommerce
+# eCommerce [WIP]
 
 eCommerce will be a cloud-native microservice application. Let's start!
 
@@ -34,3 +34,13 @@ added to PATH. On ubuntu you can add those two lines to your .bashrc
 GOBIN=$HOME/go/bin
 export PATH=$PATH:$GOBIN
 ```
+
+## Quick Start
+To quickly bootstrap application execute ```make start-all ```. It will:
+  * Create kind cluster
+  * Create needed namespaces
+  * Install needed backend services (DB, Jaeger, (more will come)... )
+  * Build, load and install apps (catalog, (more will come)... ) 
+
+As for now there are no external endpoints (ingress, api gateway) created thus for access to specific 
+services port forwarding is required. ```kubectl port-forward svc/<svc-name> <local-port>:<svc-port>```

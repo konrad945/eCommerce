@@ -1,0 +1,80 @@
+# Default values for helm.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+replicaCount: 1
+
+image:
+  repository: docker.io/library/catalog
+  pullPolicy: IfNotPresent
+  tag: "latest"
+
+nameOverride: "catalog"
+
+serviceAccount:
+  create: true
+  annotations: {}
+  name: "catalog"
+
+env:
+  normal:
+    - name: "JAEGER_HOST"
+      value: "http://jaeger-collector"
+    - name: "JAEGER_PORT"
+      value: 14268
+    - name: "DB_USERNAME"
+      value: "postgres"
+    - name: "DB_NAME"
+      value: "catalog"
+    - name: "DB_HOST"
+      value: "postgre-db-postgresql"
+    - name: "DB_PORT"
+      value: 5432
+  secret:
+    - name: "DB_PASSWORD"
+      from: "postgre-db-postgresql"
+      key: "postgres-password"
+
+
+
+podAnnotations: {}
+
+podSecurityContext:
+  runAsUser: 1101
+  runAsGroup: 1101
+
+securityContext: {}
+
+service:
+  type: ClusterIP
+  port: 80
+
+resources:
+  limits:
+    cpu: 100m
+    memory: 128Mi
+  requests:
+    cpu: 10m
+    memory: 64Mi
+
+tolerations: []
+
+affinity: {}
+
+ingress:
+  enabled: false
+  className: ""
+  annotations: {}
+  hosts:
+    - host: chart-example.local
+      paths:
+        - path: /
+          pathType: ImplementationSpecific
+  tls: []
+
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 100
+  targetCPUUtilizationPercentage: 80
+  targetMemoryUtilizationPercentage: 80

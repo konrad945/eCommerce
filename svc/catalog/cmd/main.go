@@ -1,3 +1,4 @@
+//go:generate oapi-codegen -package api ../openapi.yaml > ../api/api.gen.go
 package main
 
 import (

@@ -19,6 +19,13 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+  /healtz:
+    get:
+      summary: Health endpoint
+      responses:
+        200:
+          description: Service is healthy
+
   /api/v1/items:
     get:
       summary: Returns all items

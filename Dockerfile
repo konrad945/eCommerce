@@ -9,12 +9,15 @@ RUN go mod download
 
 COPY svc/catalog svc/catalog/.
 
-RUN go build -o app svc/catalog/cmd/main.go
+RUN CGO_ENABLED=0 go build -o /target/app svc/catalog/cmd/main.go
+
 
 FROM scratch
 
 WORKDIR /
-COPY --from=builder /app /app
+COPY --from=builder /target/app /app
+
 EXPOSE 8080
 USER 1101:1101
+
 ENTRYPOINT ["/app"]

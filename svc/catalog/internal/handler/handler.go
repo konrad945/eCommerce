@@ -33,6 +33,11 @@ func NewHandler(log *logrus.Logger, store CatalogStore) *handler {
 	return &handler{store: store, log: log}
 }
 
+// GetHealtz handles liveliness and readiness probes
+func (h *handler) GetHealtz(eCtx echo.Context) error {
+	return eCtx.NoContent(http.StatusOK)
+}
+
 // GetApiDocs returns openapi documentation
 func (h *handler) GetApiDocs(ctx echo.Context) error {
 	swagger, err := api.GetSwagger()
