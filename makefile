@@ -26,3 +26,6 @@ k8s-catalog-install:
 	helm install catalog svc/catalog/helm/ -n backend
 
 start-all: kind-start k8s-namespace-create k8s-postgresql-install k8s-jaeger-install service-catalog-build k8s-images-load k8s-catalog-install
+
+run-tests:
+	go test ./svc/...
