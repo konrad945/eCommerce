@@ -12,7 +12,7 @@ COPY svc/catalog svc/catalog/.
 RUN CGO_ENABLED=0 go build -o /target/app svc/catalog/cmd/main.go
 
 
-FROM scratch
+FROM alpine
 
 WORKDIR /
 COPY --from=builder /target/app /app

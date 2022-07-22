@@ -22,22 +22,19 @@ env:
       value: "http://jaeger-collector"
     - name: "JAEGER_PORT"
       value: 14268
-    - name: "DB_USERNAME"
-      value: "postgres"
-    - name: "DB_NAME"
-      value: "catalog"
-    - name: "DB_HOST"
-      value: "postgre-db-postgresql"
-    - name: "DB_PORT"
-      value: 5432
-  secret:
-    - name: "DB_PASSWORD"
-      from: "postgre-db-postgresql"
-      key: "postgres-password"
+    - name: "DB_CREDENTIALS_PATH"
+      value: "/vault/secrets/db-creds"
 
-
-
-podAnnotations: {}
+podAnnotations:
+  vault.hashicorp.com/agent-inject: "true"
+  vault.hashicorp.com/role: "catalog"
+  vault.hashicorp.com/agent-inject-secret-db-creds: "database/creds/db-app"
+  vault.hashicorp.com/agent-inject-template-db-creds: |
+    {
+    {{ with secret "database/creds/db-app" -}}
+    "db_connection": "host=postgre-db-postgresql port=5432 user={{ .Data.username }} password={{ .Data.password }} dbname=catalog sslmode=disable"
+    {{- end }}
+    }
 
 podSecurityContext:
   runAsUser: 1101

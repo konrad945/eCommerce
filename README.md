@@ -14,8 +14,8 @@ eCommerce will be a cloud-native microservice application. Let's start!
 * Tracing (OpenTelemetry)
 * Vault (Secrets, etc...)
 
-#### What's next to do...
-* Setup db and svc to use vault, move svc to separate namespace 
+### What's next to do...
+* Migrate terraform scripts to use vault provider, move svc to separate namespace, service mesh, create more services... 
 
 ## Prerequisites
 

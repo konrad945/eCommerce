@@ -1,38 +1,3 @@
-resource "helm_release" "vault" {
-  name  = "vault"
-  repository = "https://helm.releases.hashicorp.com"
-  chart = "vault"
-  version = "0.20.1"
-  wait = true
-
-  namespace = var.backend_svc_namespace
-  create_namespace = true
-}
-
-resource "null_resource" "init_vault" {
-  depends_on = [helm_release.vault]
-
-  provisioner "local-exec" {
-    command = "sleep 120 && echo $(kubectl exec vault-0 -n $NAMESPACE -- vault operator init  -key-shares=1 -key-threshold=1 -format=json) > cluster-keys.json"
-
-    environment = {
-      NAMESPACE = var.backend_svc_namespace
-    }
-  }
-}
-
-resource "null_resource" "unseal_vault" {
-  depends_on = [null_resource.init_vault]
-
-  provisioner "local-exec" {
-    command = "kubectl exec vault-0 -n $NAMESPACE -- vault operator unseal $(jq -r \".unseal_keys_b64[]\" cluster-keys.json)"
-
-    environment = {
-      NAMESPACE = var.backend_svc_namespace
-    }
-  }
-}
-
 resource "helm_release" "jaeger" {
   name  = "jaeger"
   repository = "https://jaegertracing.github.io/helm-charts"

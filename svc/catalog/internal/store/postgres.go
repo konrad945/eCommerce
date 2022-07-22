@@ -1,20 +1,13 @@
 package store
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/kelseyhightower/envconfig"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
+	"os"
 )
-
-type config struct {
-	Username string `envconfig:"DB_USERNAME" default:"catalog_user"`
-	Password string `envconfig:"DB_PASSWORD" default:"password"`
-	Name     string `envconfig:"DB_NAME" default:"catalog"`
-	Port     int    `envconfig:"DB_PORT" default:"5432"`
-	Host     string `envconfig:"DB_HOST" default:"localhost"`
-}
 
 var ErrInvalidPageParams = errors.New("page and pageSize parameters should be greater than or equal to 1")
 
@@ -22,15 +15,23 @@ type CatalogStore struct {
 	db *gorm.DB
 }
 
+// dbCredentials represents vault credential file struct
+type dbCredentials = struct {
+	DBConnection string `json:"db_connection"`
+}
+
 // NewCatalogStore initialize connection to underlying db. Connection parameters should be passed by env variables.
-func NewCatalogStore() (*CatalogStore, error) {
-	var conf config
-	if err := envconfig.Process("", &conf); err != nil {
-		return nil, fmt.Errorf("error while processing env variables: %w", err)
+func NewCatalogStore(dbCredPath string) (*CatalogStore, error) {
+	file, err := os.Open(dbCredPath)
+	if err != nil {
+		return nil, fmt.Errorf("error while opening file at %s: %w", dbCredPath, err)
+	}
+	var credentials = &dbCredentials{}
+	if err := json.NewDecoder(file).Decode(credentials); err != nil {
+		return nil, fmt.Errorf("error while decoding json: %w", err)
 	}
 
-	dsn := fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=%d sslmode=disable", conf.Host, conf.Username, conf.Password, conf.Name, conf.Port)
-	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
+	db, err := gorm.Open(postgres.Open(credentials.DBConnection), &gorm.Config{})
 	if err != nil {
 		return nil, fmt.Errorf("error shile opening connection to db: %w", err)
 	}

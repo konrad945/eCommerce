@@ -19,9 +19,10 @@ import (
 )
 
 type config struct {
-	Port       int    `envconfig:"HTTP_PORT" default:"8080"`
-	JaegerHost string `envconfig:"JAEGER_HOST" default:"http://localhost"`
-	JaegerPort int    `envconfig:"JAEGER_PORT" default:"14268"`
+	Port              int    `envconfig:"HTTP_PORT" default:"8080"`
+	JaegerHost        string `envconfig:"JAEGER_HOST" default:"http://localhost"`
+	JaegerPort        int    `envconfig:"JAEGER_PORT" default:"14268"`
+	DbCredentialsPath string `envconfig:"DB_CREDENTIALS_PATH" default:"/vault/secrets/db-creds"`
 }
 
 type App struct {
@@ -71,7 +72,7 @@ func (a *App) Run() error {
 	}
 	a.e.Use(middleware.OapiRequestValidator(swagger))
 
-	cStore, err := store.NewCatalogStore()
+	cStore, err := store.NewCatalogStore(conf.DbCredentialsPath)
 	if err != nil {
 		return fmt.Errorf("error while create store: %w", err)
 	}

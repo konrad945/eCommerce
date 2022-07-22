@@ -18,7 +18,7 @@ service-catalog-build:
 images-push:
 	docker push localhost:5001/catalog:latest
 
-start-all: cluster-deploy images-push apps-deploy
+start-all: service-catalog-build cluster-deploy images-push apps-deploy
 clean-all: apps-destroy cluster-destroy
 
 run-tests:
