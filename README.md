@@ -12,6 +12,10 @@ eCommerce will be a cloud-native microservice application. Let's start!
 #### More...
 * Logging (EFK stack)
 * Tracing (OpenTelemetry)
+* Vault (Secrets, etc...)
+
+#### What's next to do...
+* Setup db and svc to use vault, move svc to separate namespace 
 
 ## Prerequisites
 

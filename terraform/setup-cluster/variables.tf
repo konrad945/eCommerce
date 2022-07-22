@@ -10,3 +10,8 @@ variable "backend_svc_namespace" {
   default = "backend"
 }
 
+variable "apps_svc_namespace" {
+  type = string
+  description = "The apps services namespace (it will be created)"
+  default = "apps"
+}
