@@ -2,6 +2,17 @@
 
 eCommerce will be a cloud-native microservice application. Let's start!
 
+### Current functionality - already implemented
+#### Services
+* catalog - svc containing basic information about all products
+
+#### DBs
+* PostgreSQL (Relational DB...)
+
+#### More...
+* Logging (EFK stack)
+* Tracing (OpenTelemetry)
+
 ## Prerequisites
 
 For the full-blown experience <b>docker, kind</b> and <b> kubectl</b> should be installed.
@@ -30,7 +41,7 @@ To quickly bootstrap application execute ```make start-all ```
 It will:
   * Create kind cluster
   * Create local docker registry
-  * Install needed backend services (DB, Jaeger, (more will come)... )
+  * Install needed backend services (DB, Jaeger, EFK, (more will come)... )
   * Build, load and install apps (catalog, (more will come)... ) 
 
 To delete k8s cluster and docker registry execute ```make clean-all```
